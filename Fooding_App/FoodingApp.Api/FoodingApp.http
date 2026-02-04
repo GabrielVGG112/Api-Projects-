@@ -1,0 +1,17 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+GET http://localhost:5173/api/Category
+###
+GET http://localhost:5173/api/Category/1
+
+
+###
+GET http://localhost:5173/api/FoodItems
+
+###
+GET http://localhost:5173/api/FoodItems/paged?page=5&pageSize=100
+
+###
+GET http://localhost:5173/api/FoodItems/simplified
+
+###
+GET http://localhost:5173/api/FoodItems/simplified/paged?page=3&pageSize=100

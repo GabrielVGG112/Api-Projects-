@@ -1,0 +1,15 @@
+@FoodingApp.Api_HostAddress = https://localhost:7078
+
+GET {{FoodingApp.Api_HostAddress}}/api/FoodItem/5
+Accept: application/json
+
+###
+
+@id=0
+GET {{FoodingApp.Api_HostAddress}}/api/category/{{id}}
+
+###
+@id = 5
+GET {{FoodingApp.Api_HostAddress}}/api/category/{{id}}
+
+###

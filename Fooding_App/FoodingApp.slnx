@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="FoodingApp.Api/FoodingApp.Api.csproj" Id="b1120967-90c0-4f77-aaa6-573e72765f67" />
+  <Project Path="FoodingApp.EfCore/FoodingApp.EfCore.csproj" />
+  <Project Path="FoodingApp.Library/FoodingApp.Library.csproj" />
+</Solution>
