@@ -1,10 +1,10 @@
-﻿using FoodingApp.Api.CustomExceptions;
+﻿using AutoMapper;
+using FoodingApp.Api.CustomExceptions;
 using FoodingApp.Api.Dtos;
 using FoodingApp.Api.Services.Interfaces;
 using FoodingApp.EfCore;
 using FoodingApp.Library;
 using FoodingApp.Library.Dtos;
-using FoodingApp.Library.Extensions;
 using FoodingApp.Library.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,14 +13,17 @@ namespace FoodingApp.Api.Services;
 public class CategoryRepository : ICategoryRepository
 {
     private readonly FoodingAppDb _context;
+    private readonly IMapper _mapper;
 
-    public CategoryRepository(FoodingAppDb context)
+    public CategoryRepository(FoodingAppDb context,IMapper mapper)
+
     {
         _context = context;
+        _mapper = mapper;
     }
     public async Task<FoodCategory> AddAsync(FoodCategoryForManipulationDto entity)
     {
-        FoodCategory category = entity.ToEntity();
+        FoodCategory category = _mapper.Map<FoodCategory>(entity);
         await _context.Categories.AddAsync(category);
         await _context.SaveChangesAsync();
         return category;
@@ -30,13 +33,14 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<IEnumerable<FoodCategoryDto>> GetAllAsync()
     {
-        return await _context.Categories
-            .AsNoTracking()
-            .AsSplitQuery()
-            .Include(c => c.PrimaryGroup)
-            .Include(c => c.SubCategory)
-            .ToCategoryListDto()
-            .ToArrayAsync();
+        IEnumerable<FoodCategory> entity = await _context.Categories
+              .AsNoTracking()
+              .AsSplitQuery()
+              .Include(c => c.PrimaryGroup)
+              .Include(c => c.SubCategory)
+              .ToArrayAsync();
+        return _mapper.Map<IEnumerable<FoodCategoryDto>>(entity);
+
     }
 
     public async Task<FoodCategoryDto> GetByIdAsync(int id)
@@ -45,11 +49,11 @@ public class CategoryRepository : ICategoryRepository
             .AsNoTracking()
             .AsSplitQuery()
             .Include(c => c.PrimaryGroup)
-            .Include(c => c.SubCategory).Where(x => x.Id == id).ToCategoryListDto()
+            .Include(c => c.SubCategory).Where(x => x.Id == id)
             .FirstOrDefaultAsync();
 
 
-        return item!;
+        return _mapper.Map<FoodCategoryDto>(item);
 
     }
 
@@ -93,26 +97,26 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<IEnumerable<FoodCategoryDto>> GetPagedAsync(int page, int pageSize)
     {
-        List<FoodCategoryDto> list = await _context.Categories
+       IEnumerable<FoodCategory> list = await _context.Categories
                .Include(c => c.PrimaryGroup)
                .Include(c => c.SubCategory)
                .Skip((page - 1) * pageSize)
                .Take(pageSize)
-               .ToCategoryListDto()
-               .ToListAsync();
-        return list;
+               .ToArrayAsync();
+        return _mapper.Map<IEnumerable<FoodCategoryDto>>(list);
     }
 
     public async Task<IEnumerable<FoodItemDto>> GetFoodItemsFromCategoryIdAsync(int categoryId)
     {
-        return await _context.Categories
+        IEnumerable<FoodItemModel> model = await _context.Categories
                .AsNoTracking()
                .AsSplitQuery()
                .Include(c => c.FoodItems)
                .Where(c => c.Id == categoryId)
                .SelectMany(c => c.FoodItems)
-               .ToFoodItemDto().ToListAsync() 
+               .ToArrayAsync() 
                ?? throw new CategoryException("No such category with this id was founded");
+        return _mapper.Map<IEnumerable<FoodItemDto>>(model);    
 
     }
 }

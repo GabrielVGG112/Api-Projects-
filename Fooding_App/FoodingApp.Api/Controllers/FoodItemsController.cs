@@ -6,7 +6,7 @@ using FoodingApp.Library.Dtos;
 using FoodingApp.Library.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime.CompilerServices;
+using AutoMapper;
 
 namespace FoodingApp.Api.Controllers;
 //TO DO : refactor : Middleware  For Exception Handling
@@ -19,12 +19,13 @@ public class FoodItemsController : ControllerBase
 {
 
     private readonly IFoodingItemRepository _repo;
-
+   
 
     public FoodItemsController(IFoodingItemRepository repo)
 
     {
         _repo = repo;
+ 
 
     }
 
@@ -297,10 +298,14 @@ public class FoodItemsController : ControllerBase
         catch (FoodItemException e)
         {
 
+            return BadRequest(e.Message);
+        }
+        catch (CategoryException e)
+        {
             return NotFound(e.Message);
         }
-       
-    }
+
+        }
        
     }
    

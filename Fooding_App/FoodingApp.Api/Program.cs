@@ -1,7 +1,10 @@
 using FoodingApp.Api.Extensions;
+using FoodingApp.Api.Services.Mapping;
 using FoodingApp.EfCore;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json.Serialization;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,14 +18,14 @@ builder.Services.AddControllers()
                     o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 }
                 );
-
+builder.Services.AddAutoMapper(cfg => { },typeof(ItemsAndCategoriesMapper));
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-
+builder.Services.AddRouting(o=> o.LowercaseUrls= true);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSqlite<FoodingAppDb>(builder.Configuration.GetConnectionString("Sqlite"));
+builder.Services.AddSqlite<FoodingAppDb>(builder.Configuration.GetConnectionString("Test"));
 
 // custom extension method to add scoped services
 builder.Services.AddRepos();

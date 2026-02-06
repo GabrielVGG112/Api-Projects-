@@ -4,11 +4,11 @@
         where TEntity : class, new() where TPresentationDto : class, new()
     {
 
-        public Task<IEnumerable<TPresentationDto>> GetAllAsync();
-        public Task<TPresentationDto> GetByIdAsync(int id);
-        public Task<TEntity> AddAsync(TManipulationDto entity);
-        public Task UpdateAsync(int id, TManipulationDto entity);
-        public Task SoftDeleteAsync(int id);
+        Task<IEnumerable<TPresentationDto>> GetAllAsync();
+        Task<TPresentationDto> GetByIdAsync(int id);
+        Task<TEntity> AddAsync(TManipulationDto entity);
+        Task UpdateAsync(int id, TManipulationDto entity);
+        Task SoftDeleteAsync(int id);
 
     }
 }
