@@ -106,7 +106,7 @@ public class FoodingItemRepository : IFoodingItemRepository
 
     }
 
-    public async Task<MineralsDto> GetMineralsDtoAsync(int foodItemId)
+    public async Task<MineralsDto> GetMineralsAsync(int foodItemId)
     {
         FoodItemModel entity=  await _context.FoodItems.AsNoTracking()
               .AsSplitQuery()
@@ -175,7 +175,7 @@ public class FoodingItemRepository : IFoodingItemRepository
         if (entity is null)
             throw new FoodItemException($"Food item with ID {id} not found");
 
-        _mapper.Map(dto, entity.Nutrients.Minerals);
+        _mapper.Map(dto, entity);
 
         await _context.SaveChangesAsync();
 

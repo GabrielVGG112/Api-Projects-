@@ -9,7 +9,7 @@ namespace FoodingApp.Api.Services.Interfaces
         Task<IEnumerable<FoodItemDto>> GetPagedAsync(int page, int pageSize);
         Task<VitaminsDto> GetVitaminsAsync(int foodItemId);
         Task<MacroNutrientsDto> GetMacrosAsync(int foodItemId);
-        Task<MineralsDto> GetMineralsDtoAsync(int foodItemId);
+        Task<MineralsDto> GetMineralsAsync(int foodItemId);
         Task UpdateMineralsAsync(int id, MineralsDto dto);
         Task UpdateVitaminsAsync(int id, VitaminsDto dto);
         Task UpdateMacrosAsync(int id, MacroNutrientsDto dto);
