@@ -29,11 +29,10 @@ public class FoodItemsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<FoodItemDto>>> GetAll()
+    public async Task<ActionResult<IEnumerable<FoodItemDto>>> GetAll(CancellationToken ct)
     {
 
-
-        return Ok(await _repo.GetAllAsync());
+        return Ok(await _repo.GetAllAsync(ct));
 
     }
 
@@ -68,24 +67,10 @@ public class FoodItemsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateFoodItemAsync(FoodItemForManipulationDto foodItemDto)
     {
-        try
-        {
+        
             var createdItem = await _repo.AddAsync(foodItemDto);
             return CreatedAtAction(nameof(GetFoodItemByIdAsync), new { id = createdItem.Id }, createdItem);
-        }
-        catch (DbUpdateException e)
-        {
-            if (e.InnerException?.Message.Contains("duplicate", StringComparison.OrdinalIgnoreCase) is true)
-            {
-                return Conflict("A category with primary and secondary key exists alredy");
-            }
-
-            if (e.InnerException?.Message.Contains("FOREIGN KEY", StringComparison.OrdinalIgnoreCase) is true)
-            {
-                return BadRequest("Invalid CategoryId or related entity does not exist.");
-            }
-            return BadRequest();
-        }
+ 
     }
 
 
@@ -94,15 +79,11 @@ public class FoodItemsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateFoodItemAsync(int id, FoodItemForManipulationDto foodItemDto)
     {
-        try
-        {
+        
             await _repo.UpdateAsync(id, foodItemDto);
             return NoContent();
-        }
-        catch (FoodItemException e)
-        {
-            return NotFound(e.Message);
-        }
+        
+     
 
     }
 
@@ -110,15 +91,11 @@ public class FoodItemsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletebyId(int id)
     {
-        try
-        {
+       
             await _repo.SoftDeleteAsync(id);
             return NoContent();
-        }
-        catch (FoodItemException e)
-        {
-            return NotFound(e.Message);
-        }
+        
+     
     }
     [HttpPatch("{id}")]
     public async Task<IActionResult> PatchFoodItem([FromBody] JsonPatchDocument<FoodItemDto> patchDocumet, int id)
@@ -133,20 +110,11 @@ public class FoodItemsController : ControllerBase
         {
             return BadRequest(ModelState);
         }
-        try
-        {
+       
             await _repo.PatchDocumentAsync(id, item);
             return NoContent();
-        }
-        catch (FoodItemException e)
-        {
-
-            return BadRequest(e.Message);
-        }
-        catch (CategoryException e)
-        {
-            return NotFound(e.Message);
-        }
+        
+  
 
     }
 

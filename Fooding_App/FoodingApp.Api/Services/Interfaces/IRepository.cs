@@ -4,7 +4,7 @@
         where TEntity : class, new() where TPresentationDto : class, new()
     {
 
-        Task<IEnumerable<TPresentationDto>> GetAllAsync();
+        Task<IEnumerable<TPresentationDto>> GetAllAsync(CancellationToken ct);
         Task<TPresentationDto> GetByIdAsync(int id);
         Task<TEntity> AddAsync(TManipulationDto entity);
         Task UpdateAsync(int id, TManipulationDto entity);

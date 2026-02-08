@@ -1,14 +1,22 @@
 using FoodingApp.Api.Extensions;
 using FoodingApp.Api.Services.Mapping;
 using FoodingApp.EfCore;
-using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json.Serialization;
-using AutoMapper;
+using Serilog;
+using Serilog.Formatting.Json;
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug() 
+    .WriteTo.File("logs/log.txt",
+    rollingInterval:RollingInterval.Day,
+    retainedFileCountLimit:10)
+    .WriteTo.Console(new JsonFormatter())
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
 
+builder.Host.UseSerilog();
 
 builder.Services.AddControllers()
                 .AddNewtonsoftJson()
@@ -17,7 +25,9 @@ builder.Services.AddControllers()
                 {
                     o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 }
-                );
+                )
+                .AddXmlDataContractSerializerFormatters();
+builder.Services.AddProblemDetails();
 builder.Services.AddAutoMapper(cfg => { },typeof(ItemsAndCategoriesMapper));
 
 
@@ -34,7 +44,11 @@ builder.Services.AddRepos();
 
 var app = builder.Build();
 
-
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
 
 
 // Configure the HTTP request pipeline.
@@ -47,6 +61,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseGlobalExceptionHandling();
 
 app.MapControllers();
 

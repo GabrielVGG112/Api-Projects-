@@ -63,14 +63,14 @@ public class FoodingItemRepository : IFoodingItemRepository
         return item;
     }
 
-    public async Task<IEnumerable<FoodItemDto>> GetAllAsync()
+    public async Task<IEnumerable<FoodItemDto>> GetAllAsync(CancellationToken ct)
     {
         IEnumerable<FoodItemModel> items = await _context.FoodItems
              .AsNoTrackingWithIdentityResolution()
              .AsSplitQuery()
              .Include(fi => fi.Category.PrimaryGroup)
              .Include(fi => fi.Category.SubCategory)
-             .ToListAsync();
+             .ToListAsync(ct);
 
         IEnumerable<FoodItemDto> dto = _mapper.Map<IEnumerable<FoodItemDto>>(items);
 

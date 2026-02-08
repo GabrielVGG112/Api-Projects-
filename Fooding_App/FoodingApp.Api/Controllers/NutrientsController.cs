@@ -69,10 +69,6 @@ namespace FoodingApp.Api.Controllers
              await ApplyPatchAsync(id, patchDocument, _repo.GetVitaminsAsync, _repo.UpdateVitaminsAsync);
 
 
-
-
-
-
         private async Task<ActionResult<T>> ApplyGetAsync<T>(int id, Func<int, Task<T>> getter) 
         {
             try
@@ -88,15 +84,10 @@ namespace FoodingApp.Api.Controllers
 
         private async Task<IActionResult> ApplyPutAsync<TDto>(int id, TDto dto, Func<int, TDto, Task> updater)
         {
-            try
-            {
+           
                 await updater(id, dto);
                 return NoContent();
-            }
-            catch (FoodItemException e)
-            {
-                return BadRequest(e.Message);
-            }
+    
         }
 
 
@@ -115,15 +106,10 @@ namespace FoodingApp.Api.Controllers
             {
                 return BadRequest(ModelState);
             }
-            try
-            {
+           
                 await updater(id, dto);
                 return NoContent();
-            }
-            catch (FoodItemException e)
-            {
-                return BadRequest(e.Message);
-            }
+         
         }
     }
 }

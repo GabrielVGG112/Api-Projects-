@@ -22,9 +22,9 @@ namespace FoodingApp.Api.Controllers
 
 
         [HttpGet]  
-        public async Task<ActionResult<IEnumerable<FoodCategoryDto>>> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<FoodCategoryDto>>> GetAllAsync(CancellationToken ct)
         {
-            var categories = await _repo.GetAllAsync();
+            var categories = await _repo.GetAllAsync(ct);
             return Ok(categories);
         }
 
@@ -41,77 +41,46 @@ namespace FoodingApp.Api.Controllers
 
                 return NotFound();
         }
+
         [HttpGet("{id}/fooditems")]
         public async Task<ActionResult<IEnumerable<FoodItemDto>>> GetFoodItemsByCategoryIdAsync(int id)
         {
-            try
-            {
+           
                 var items = await _repo.GetFoodItemsFromCategoryIdAsync(id);
                 return Ok(items);
-            }
-            catch (CategoryException e)
-            {
-                return NotFound(e.Message);
-            }
+        
         }
+
+
         [HttpDelete]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            try
-            {
+        
               await  _repo.SoftDeleteAsync(id);
                 return NoContent();
-            }
-            catch (CategoryException e)
-            {
-                return NotFound(e.Message);
-            }
+            
+        
         }
 
 
         [HttpPost]
         public async Task<IActionResult> PostCategory(FoodCategoryForManipulationDto category)
         {
-            try
-            {
-                var item = await _repo.AddAsync(category);
 
-                return CreatedAtAction(nameof(GetByIdAsync), new { id = item.Id }, item);
-            }
-            catch (DbUpdateException e)
-            {
-                if (e.InnerException?.Message.Contains("duplicate", StringComparison.OrdinalIgnoreCase)is true)
-                {
+            var item = await _repo.AddAsync(category);
 
-                  return Conflict("A category with primary and secondary key exists alredy");
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = item.Id }, item);
 
-                }
-
-
-                return BadRequest("Could not create the food item due to a database error.");
-            }
         }
-
-
 
         [HttpPut("{id}")]
         public async Task<IActionResult> PostCategory(int id, FoodCategoryForManipulationDto category)
         {
-           
-            try
-            {
 
              await _repo.UpdateAsync(id, category);
              return NoContent();
 
-            }
-
-            catch (CategoryException e) 
-            {
-
-                return BadRequest(e.Message);
-
-            }
+        
         }
 
     }

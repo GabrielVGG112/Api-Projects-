@@ -31,14 +31,14 @@ public class CategoryRepository : ICategoryRepository
 
     }
 
-    public async Task<IEnumerable<FoodCategoryDto>> GetAllAsync()
+    public async Task<IEnumerable<FoodCategoryDto>> GetAllAsync(CancellationToken ct)
     {
         IEnumerable<FoodCategory> entity = await _context.Categories
               .AsNoTracking()
               .AsSplitQuery()
               .Include(c => c.PrimaryGroup)
               .Include(c => c.SubCategory)
-              .ToArrayAsync();
+              .ToArrayAsync(ct);
         return _mapper.Map<IEnumerable<FoodCategoryDto>>(entity);
 
     }
