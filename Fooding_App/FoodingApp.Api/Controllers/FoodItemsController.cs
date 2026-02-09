@@ -1,11 +1,9 @@
-﻿using FoodingApp.Api.CustomExceptions;
-using FoodingApp.Api.Dtos;
+﻿using FoodingApp.Api.Dtos;
 using FoodingApp.Api.Services.Interfaces;
 using FoodingApp.Library.Dtos;
 using FoodingApp.Library.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FoodingApp.Api.Controllers;
 //TO DO : refactor : Middleware  For Exception Handling
@@ -67,10 +65,10 @@ public class FoodItemsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateFoodItemAsync(FoodItemForManipulationDto foodItemDto)
     {
-        
-            var createdItem = await _repo.AddAsync(foodItemDto);
-            return CreatedAtAction(nameof(GetFoodItemByIdAsync), new { id = createdItem.Id }, createdItem);
- 
+
+        var createdItem = await _repo.AddAsync(foodItemDto);
+        return CreatedAtAction(nameof(GetFoodItemByIdAsync), new { id = createdItem.Id }, createdItem);
+
     }
 
 
@@ -79,11 +77,11 @@ public class FoodItemsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateFoodItemAsync(int id, FoodItemForManipulationDto foodItemDto)
     {
-        
-            await _repo.UpdateAsync(id, foodItemDto);
-            return NoContent();
-        
-     
+
+        await _repo.UpdateAsync(id, foodItemDto);
+        return NoContent();
+
+
 
     }
 
@@ -91,11 +89,11 @@ public class FoodItemsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletebyId(int id)
     {
-       
-            await _repo.SoftDeleteAsync(id);
-            return NoContent();
-        
-     
+
+        await _repo.SoftDeleteAsync(id);
+        return NoContent();
+
+
     }
     [HttpPatch("{id}")]
     public async Task<IActionResult> PatchFoodItem([FromBody] JsonPatchDocument<FoodItemDto> patchDocumet, int id)
@@ -110,16 +108,16 @@ public class FoodItemsController : ControllerBase
         {
             return BadRequest(ModelState);
         }
-       
-            await _repo.PatchDocumentAsync(id, item);
-            return NoContent();
-        
-  
+
+        await _repo.PatchDocumentAsync(id, item);
+        return NoContent();
+
+
 
     }
 
 
 }
-    
-   
+
+
 

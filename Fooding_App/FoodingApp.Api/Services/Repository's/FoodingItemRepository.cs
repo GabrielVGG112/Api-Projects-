@@ -14,7 +14,7 @@ public class FoodingItemRepository : IFoodingItemRepository
     private readonly FoodingAppDb _context;
     private readonly IMapper _mapper;
 
-    public FoodingItemRepository(FoodingAppDb context,IMapper mapper)
+    public FoodingItemRepository(FoodingAppDb context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;
@@ -22,14 +22,14 @@ public class FoodingItemRepository : IFoodingItemRepository
 
     public async Task UpdateMineralsAsync(int id, MineralsDto dto)
     {
-           
+
         FoodItemModel? entity = await _context.FoodItems
          .SingleOrDefaultAsync(e => e.Id == id)
          ?? throw new FoodItemException("No Food item with this id exists");
-  
-            _mapper.Map( dto, entity.Nutrients.Minerals);
-            await _context.SaveChangesAsync();
-        
+
+        _mapper.Map(dto, entity.Nutrients.Minerals);
+        await _context.SaveChangesAsync();
+
     }
 
     public async Task UpdateVitaminsAsync(int id, VitaminsDto dto)
@@ -40,7 +40,7 @@ public class FoodingItemRepository : IFoodingItemRepository
         if (entity is not null)
         {
             _mapper.Map(dto, entity.Nutrients.Vitamins);
-       
+
             await _context.SaveChangesAsync();
         }
     }
@@ -87,7 +87,7 @@ public class FoodingItemRepository : IFoodingItemRepository
              .Include(fi => fi.Category.SubCategory)
              .Where(fi => fi.Id == id)
              .FirstOrDefaultAsync();
-              
+
         FoodItemDto dto = _mapper.Map<FoodItemDto>(entity);
 
         return dto;
@@ -102,13 +102,13 @@ public class FoodingItemRepository : IFoodingItemRepository
               .FirstOrDefaultAsync()
               ?? throw new FoodItemException($"No food item found with this ID ");
 
-        return  _mapper.Map<MacroNutrientsDto>(entity.Nutrients.Macros);
+        return _mapper.Map<MacroNutrientsDto>(entity.Nutrients.Macros);
 
     }
 
     public async Task<MineralsDto> GetMineralsAsync(int foodItemId)
     {
-        FoodItemModel entity=  await _context.FoodItems.AsNoTracking()
+        FoodItemModel entity = await _context.FoodItems.AsNoTracking()
               .AsSplitQuery()
               .Include(fi => fi.Nutrients.Minerals)
               .Where(fi => fi.Id == foodItemId)
@@ -181,15 +181,15 @@ public class FoodingItemRepository : IFoodingItemRepository
 
     }
 
-    public async Task PatchDocumentAsync(int id,FoodItemDto dto)
+    public async Task PatchDocumentAsync(int id, FoodItemDto dto)
     {
-       FoodItemModel? entity =await  _context.FoodItems
-            .Include(f=>f.Category)
-            .SingleOrDefaultAsync(f => f.Id == id) 
-            ?? throw new FoodItemException($"Food item with ID {id} not found");   
+        FoodItemModel? entity = await _context.FoodItems
+             .Include(f => f.Category)
+             .SingleOrDefaultAsync(f => f.Id == id)
+             ?? throw new FoodItemException($"Food item with ID {id} not found");
 
         FoodCategory? category = await _context.Categories
-            .SingleOrDefaultAsync(c => c.PrimaryGroupId == dto.PrimaryCategoryId && c.SubCategoryId == dto.SubCategoryId) ?? 
+            .SingleOrDefaultAsync(c => c.PrimaryGroupId == dto.PrimaryCategoryId && c.SubCategoryId == dto.SubCategoryId) ??
             throw new CategoryException($"No category found with PrimaryGroupId {dto.PrimaryCategoryId} and SubCategoryId {dto.SubCategoryId}");
 
 

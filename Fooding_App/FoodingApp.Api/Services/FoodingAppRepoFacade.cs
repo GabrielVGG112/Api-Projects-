@@ -2,11 +2,11 @@
 
 namespace FoodingApp.Api.Services
 {
-    public class FoodingAppRepoFacade 
+    public class FoodingAppRepoFacade
     {
-        public FoodingAppRepoFacade(ICategoryRepository categoryRepo,IFoodingItemRepository fItemRepo)
+        public FoodingAppRepoFacade(ICategoryRepository categoryRepo, IFoodingItemRepository fItemRepo)
         {
-           CategoryRepository = categoryRepo;
+            CategoryRepository = categoryRepo;
             FoodingItemRepository = fItemRepo;
         }
         public ICategoryRepository CategoryRepository { get; set; }

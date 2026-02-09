@@ -1,10 +1,8 @@
-﻿using System.CodeDom;
+﻿namespace FoodingApp.Api.CustomExceptions;
 
-namespace FoodingApp.Api.CustomExceptions;
-
-public class CategoryException :Exception
+public class CategoryException : Exception
 
 {
-    public CategoryException(string message) : base (message) { }
-    
+    public CategoryException(string message) : base(message) { }
+
 }

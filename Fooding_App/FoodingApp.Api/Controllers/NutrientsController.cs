@@ -1,7 +1,6 @@
 ﻿using FoodingApp.Api.CustomExceptions;
 using FoodingApp.Api.Dtos;
 using FoodingApp.Api.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,17 +21,15 @@ namespace FoodingApp.Api.Controllers
 
         }
 
-
-
         [HttpGet("vitamins")]
-        public async Task<ActionResult<VitaminsDto>> GetVitamins(int id) =>await  ApplyGetAsync(id, _repo.GetVitaminsAsync);
+        public async Task<ActionResult<VitaminsDto>> GetVitamins(int id) => await ApplyGetAsync(id, _repo.GetVitaminsAsync);
 
 
         [HttpGet("macros")]
         public async Task<ActionResult<MacroNutrientsDto>> GetMacroNutrients(int id) => await ApplyGetAsync(id, _repo.GetMacrosAsync);
 
         [HttpGet("minerals")]
-        public async Task<ActionResult<MineralsDto>> GetMinerals(int id) => await ApplyGetAsync(id ,_repo.GetMineralsAsync);
+        public async Task<ActionResult<MineralsDto>> GetMinerals(int id) => await ApplyGetAsync(id, _repo.GetMineralsAsync);
 
 
         [HttpPut("vitamins")]
@@ -69,7 +66,7 @@ namespace FoodingApp.Api.Controllers
              await ApplyPatchAsync(id, patchDocument, _repo.GetVitaminsAsync, _repo.UpdateVitaminsAsync);
 
 
-        private async Task<ActionResult<T>> ApplyGetAsync<T>(int id, Func<int, Task<T>> getter) 
+        private async Task<ActionResult<T>> ApplyGetAsync<T>(int id, Func<int, Task<T>> getter)
         {
             try
             {
@@ -84,10 +81,10 @@ namespace FoodingApp.Api.Controllers
 
         private async Task<IActionResult> ApplyPutAsync<TDto>(int id, TDto dto, Func<int, TDto, Task> updater)
         {
-           
-                await updater(id, dto);
-                return NoContent();
-    
+
+            await updater(id, dto);
+            return NoContent();
+
         }
 
 
@@ -106,10 +103,10 @@ namespace FoodingApp.Api.Controllers
             {
                 return BadRequest(ModelState);
             }
-           
-                await updater(id, dto);
-                return NoContent();
-         
+
+            await updater(id, dto);
+            return NoContent();
+
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public class VitaminsDto
     {
-        public int  FoodItemId { get; set; }
+        public int FoodItemId { get; set; }
         public double VitaminA { get; set; }
         public double VitaminB1 { get; set; }
         public double VitaminB2 { get; set; }

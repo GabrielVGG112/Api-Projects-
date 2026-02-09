@@ -6,7 +6,7 @@ namespace FoodingApp.Api.Extensions
 {
     public static class LifetimeServicesExtension
     {
-        public static IServiceCollection AddRepos (this IServiceCollection services) 
+        public static IServiceCollection AddRepos(this IServiceCollection services)
         {
             services.AddScoped<IFoodingItemRepository, FoodingItemRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();

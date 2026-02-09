@@ -1,7 +1,7 @@
 ﻿using FoodingApp.Api.CustomExceptions;
 using FoodingApp.Api.Services.CustomMiddlewares;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace FoodingApp.Api.Services.CustomMiddlewares
 {
@@ -17,13 +17,13 @@ namespace FoodingApp.Api.Services.CustomMiddlewares
         }
 
 
-        public async Task InvokeAsync(HttpContext context) 
+        public async Task InvokeAsync(HttpContext context)
         {
-            try 
+            try
             {
-                await _next (context);
+                await _next(context);
             }
-            catch(CategoryException ex) 
+            catch (CategoryException ex)
             {
                 _logger.LogError(ex, "A CategoryException occurred.");
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
@@ -39,42 +39,41 @@ namespace FoodingApp.Api.Services.CustomMiddlewares
                 await context.Response.WriteAsJsonAsync(errorResponse);
             }
 
-            catch(TaskCanceledException ex) 
+            catch (TaskCanceledException ex)
             {
-                _logger.LogWarning( ex,"Request was canceled by the client.");
+                _logger.LogWarning(ex, "Request was canceled by the client.");
                 context.Response.StatusCode = StatusCodes.Status499ClientClosedRequest;
                 var errorResponse = new { Message = "The request was canceled by the client." };
                 await context.Response.WriteAsJsonAsync(errorResponse);
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException ex) when (ex.InnerException.Message.Contains("UNIQUE", StringComparison.OrdinalIgnoreCase) ||
+            ex.InnerException.Message.Contains("duplicate", StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogError(ex, "A database update exception occurred.");
 
                 var message = ex.InnerException?.Message ?? ex.Message;
 
-                // UNIQUE constraint violation
-                if (message.Contains("UNIQUE", StringComparison.OrdinalIgnoreCase) ||
-                    message.Contains("duplicate", StringComparison.OrdinalIgnoreCase))
-                {
-                    context.Response.StatusCode = StatusCodes.Status409Conflict;
-                    await context.Response.WriteAsJsonAsync(new { Message = "Duplicate entry detected." });
-                    return;
-                }
 
-                // FOREIGN KEY violation
-                if (message.Contains("FOREIGN KEY", StringComparison.OrdinalIgnoreCase))
-                {
-                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                    await context.Response.WriteAsJsonAsync(new { Message = "Invalid foreign key reference." });
-                    return;
-                }
+                context.Response.StatusCode = StatusCodes.Status409Conflict;
+                await context.Response.WriteAsJsonAsync(new { Message = "Duplicate entry detected." });
+                return;
+            }
+            catch (DbUpdateException ex) when (ex.Message.Contains("FOREIGN KEY", StringComparison.OrdinalIgnoreCase))
+            {
 
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await context.Response.WriteAsJsonAsync(new { Message = "Invalid foreign key reference." });
+                return;
+
+            }
+            catch (DbUpdateException ex) 
+            { 
                 // Other SQL errors
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 await context.Response.WriteAsJsonAsync(new { Message = "A database error occurred." });
             }
 
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "An unhandled exception occurred.");
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;

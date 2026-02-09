@@ -15,7 +15,7 @@ public class CategoryRepository : ICategoryRepository
     private readonly FoodingAppDb _context;
     private readonly IMapper _mapper;
 
-    public CategoryRepository(FoodingAppDb context,IMapper mapper)
+    public CategoryRepository(FoodingAppDb context, IMapper mapper)
 
     {
         _context = context;
@@ -70,39 +70,39 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task UpdateAsync(int id, FoodCategoryForManipulationDto entity)
     {
-      FoodCategory? objectToUpdate = 
-            await   _context.Categories
-            .SingleOrDefaultAsync(x => x.Id == id) ??
-             throw new CategoryException("No object to update found");
+        FoodCategory? objectToUpdate =
+              await _context.Categories
+              .SingleOrDefaultAsync(x => x.Id == id) ??
+               throw new CategoryException("No object to update found");
 
 
-        PrimaryCategory?  nav1 = 
+        PrimaryCategory? nav1 =
             await _context.PrimaryCategories
-            .SingleOrDefaultAsync(pc=>pc.Id == entity.PrimaryGroupId) ??
+            .SingleOrDefaultAsync(pc => pc.Id == entity.PrimaryGroupId) ??
              throw new CategoryException("No Primary Category with this id exists in db");
 
 
-        SubCategory? nav2 = 
+        SubCategory? nav2 =
             await _context.SubCategories
-            .SingleOrDefaultAsync(pc=>pc.Id == entity.SubCategoryId) ??
+            .SingleOrDefaultAsync(pc => pc.Id == entity.SubCategoryId) ??
              throw new CategoryException("No Secondary Category with this id exists in db");
 
 
-      
+
 
         objectToUpdate.PrimaryGroup = nav1;
         objectToUpdate.SubCategory = nav2;
-      
+
     }
 
     public async Task<IEnumerable<FoodCategoryDto>> GetPagedAsync(int page, int pageSize)
     {
-       IEnumerable<FoodCategory> list = await _context.Categories
-               .Include(c => c.PrimaryGroup)
-               .Include(c => c.SubCategory)
-               .Skip((page - 1) * pageSize)
-               .Take(pageSize)
-               .ToArrayAsync();
+        IEnumerable<FoodCategory> list = await _context.Categories
+                .Include(c => c.PrimaryGroup)
+                .Include(c => c.SubCategory)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToArrayAsync();
         return _mapper.Map<IEnumerable<FoodCategoryDto>>(list);
     }
 
@@ -114,9 +114,9 @@ public class CategoryRepository : ICategoryRepository
                .Include(c => c.FoodItems)
                .Where(c => c.Id == categoryId)
                .SelectMany(c => c.FoodItems)
-               .ToArrayAsync() 
+               .ToArrayAsync()
                ?? throw new CategoryException("No such category with this id was founded");
-        return _mapper.Map<IEnumerable<FoodItemDto>>(model);    
+        return _mapper.Map<IEnumerable<FoodItemDto>>(model);
 
     }
 }
