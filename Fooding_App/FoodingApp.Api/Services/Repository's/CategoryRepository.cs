@@ -30,7 +30,26 @@ public class CategoryRepository : ICategoryRepository
 
 
     }
-
+    public async Task<IEnumerable<PrimaryCategory>> GeAllPrimaryCategoriesAsync(CancellationToken ct) 
+    {
+      return await  _context.PrimaryCategories.ToArrayAsync(ct);
+    }
+    public async Task<IEnumerable<SubCategory>> GetAllSubCategoriesAsync(CancellationToken ct)
+    {
+        return await _context.SubCategories.ToArrayAsync(ct);
+    }
+    public async Task<IEnumerable<FoodCategoryDto>>GetAllSubcategoriesFromOnePrimaryAsync(int id , CancellationToken ct) 
+    {
+      var categories = await  _context.Categories
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(c => c.PrimaryGroup)
+            .Include(c => c.SubCategory)
+            .Where(c => c.PrimaryGroup.Id == id)
+            .ToArrayAsync(ct)
+            ?? throw new CategoryException("No primary category with this id exists");
+        return _mapper.Map<IEnumerable<FoodCategoryDto>>(categories);
+    }
     public async Task<IEnumerable<FoodCategoryDto>> GetAllAsync(CancellationToken ct)
     {
         IEnumerable<FoodCategory> entity = await _context.Categories
@@ -50,7 +69,8 @@ public class CategoryRepository : ICategoryRepository
             .AsSplitQuery()
             .Include(c => c.PrimaryGroup)
             .Include(c => c.SubCategory).Where(x => x.Id == id)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync() ??
+            throw new CategoryException("No category with this id exists");
 
 
         return _mapper.Map<FoodCategoryDto>(item);
@@ -59,9 +79,8 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task SoftDeleteAsync(int id)
     {
-        FoodCategory? item = await _context.Categories.SingleOrDefaultAsync(cat => cat.Id == id);
-        if (item is null)
-            throw new CategoryException($"No Food Category with id {id} exists");
+        FoodCategory? item = await _context.Categories.SingleOrDefaultAsync(cat => cat.Id == id)
+        ??  throw new CategoryException($"No Food Category with id {id} exists");
 
 
         _context.Entry(item).Property("is_deleted").CurrentValue = true;

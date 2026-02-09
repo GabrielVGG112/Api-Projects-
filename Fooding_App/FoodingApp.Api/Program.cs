@@ -14,6 +14,8 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 builder.Logging.ClearProviders();
 
 builder.Host.UseSerilog();
@@ -42,23 +44,27 @@ builder.Services.AddRepos();
 
 
 
-var app = builder.Build();
+
+
+    var app = builder.Build();
+    Console.WriteLine("Building app succeeded.");
 
 
 
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
 
-app.UseHttpsRedirection();
+    app.UseHttpsRedirection();
 
-app.UseAuthorization();
-app.UseGlobalExceptionHandling();
+    app.UseAuthorization();
+    app.UseGlobalExceptionHandling();
 
-app.MapControllers();
+    app.MapControllers();
 
-app.Run();
+    app.Run();
+

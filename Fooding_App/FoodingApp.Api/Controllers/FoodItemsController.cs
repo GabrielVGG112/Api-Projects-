@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodingApp.Api.Controllers;
-//TO DO : refactor : Middleware  For Exception Handling
+//
 // TO DO : Fluent Validation
-// Logging
+
 
 [Route("api/[controller]")]
 [ApiController]

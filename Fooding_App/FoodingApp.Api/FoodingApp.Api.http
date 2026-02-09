@@ -13,3 +13,7 @@ GET {{FoodingApp.Api_HostAddress}}/api/category/{{id}}
 GET {{FoodingApp.Api_HostAddress}}/api/category/{{id}}
 
 ###
+
+GET {{FoodingApp.Api_HostAddress}}/api/search
+
+###

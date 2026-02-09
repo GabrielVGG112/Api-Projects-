@@ -1,4 +1,7 @@
-﻿using FoodingApp.Api.Services;
+﻿using FoodingApp.Api.Dtos;
+using FoodingApp.Api.Services.Interfaces;
+using FoodingApp.Library.Dtos;
+using FoodingApp.Library.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodingApp.Api.Controllers
@@ -7,11 +10,16 @@ namespace FoodingApp.Api.Controllers
     [ApiController]
     public class SearchController : ControllerBase
     {
-        private readonly FoodingAppRepoFacade _repos;
+        private readonly ISearchRepository _repo;
 
-        public SearchController(FoodingAppRepoFacade repos)
+        public SearchController(ISearchRepository repo)
         {
-            _repos = repos;
+            _repo = repo;
+        }
+        [HttpPost]
+        public async Task<ActionResult<PagedResultDto<FoodItemDto>>> GetFoodItemByQuery([FromBody] FoodSearchQueryDto searchQuery,CancellationToken ct) 
+        {
+           return Ok(await _repo.GetFoodItemAsync(searchQuery, ct));
         }
 
     }

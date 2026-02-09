@@ -1,19 +1,21 @@
 ﻿using FoodingApp.Api.Dtos;
 using FoodingApp.Api.Services.Interfaces;
 using FoodingApp.Library.Dtos;
+using FoodingApp.Library.Models;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol.Core.Types;
 
 namespace FoodingApp.Api.Controllers
-{// TO DO : refactor : Middleware  For Exception Handling
+{
     // TO DO : Fluent Validation
     // Logging
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoryController : ControllerBase
+    public class CategoriesController : ControllerBase
     {
         private readonly ICategoryRepository _repo;
 
-        public CategoryController(ICategoryRepository repo)
+        public CategoriesController(ICategoryRepository repo)
         {
             _repo = repo;
         }
@@ -25,8 +27,24 @@ namespace FoodingApp.Api.Controllers
             var categories = await _repo.GetAllAsync(ct);
             return Ok(categories);
         }
-
-
+        [HttpGet("primary")]
+        public async Task<ActionResult<IEnumerable<PrimaryCategory>>> GetAllPrimary(CancellationToken ct) 
+        {
+            var categories = await _repo.GeAllPrimaryCategoriesAsync(ct);
+            return Ok(categories);
+        }
+        [HttpGet("secondary")]
+        public async Task<ActionResult<IEnumerable<SubCategory>>> GetAllSubcategory(CancellationToken ct)
+        {
+            var categories = await _repo.GetAllSubCategoriesAsync(ct);
+            return Ok(categories);
+        }
+        [HttpGet("/primary/{id}/secondary")]
+        public async Task<ActionResult<IEnumerable<FoodCategoryDto>>> GetAllSubByPrimary(int id, CancellationToken ct)
+        {
+            var categories = await _repo.GetAllSubcategoriesFromOnePrimaryAsync(id,ct);
+            return Ok(categories);
+        }
         [HttpGet("{id}")]
         public async Task<ActionResult<FoodCategoryDto>> GetByIdAsync(int id)
         {

@@ -10,7 +10,7 @@ namespace FoodingApp.Api.Extensions
         {
             services.AddScoped<IFoodingItemRepository, FoodingItemRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
-            services.AddScoped<FoodingAppRepoFacade>();
+            services.AddScoped<ISearchRepository , FoodingAppSearchRepository>();
             return services;
         }
     }
