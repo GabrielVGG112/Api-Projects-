@@ -187,25 +187,23 @@ public class FoodingItemRepository : IFoodingItemRepository
         await _context.SaveChangesAsync();
 
     }
-
     public async Task PatchDocumentAsync(int id, FoodItemDto dto)
     {
-        FoodItemModel? entity =
-            await _context.FoodItems
-             .Include(f => f.Category)
-             .SingleOrDefaultAsync(f => f.Id == id)
-             ?? throw new FoodItemException($"Food item with ID {id} not found");
+        var entity = await _context.FoodItems
+            .SingleOrDefaultAsync(f => f.Id == id)
+            ?? throw new FoodItemException($"Food item with ID {id} not found");
 
-        FoodCategory? category = await _context.Categories
-            .SingleOrDefaultAsync(c => c.PrimaryGroupId == dto.PrimaryCategoryId && c.SubCategoryId == dto.SubCategoryId) ??
-            throw new CategoryException($"No category found with PrimaryGroupId {dto.PrimaryCategoryId} and SubCategoryId {dto.SubCategoryId}");
+        var category = await _context.Categories
+            .SingleOrDefaultAsync(c =>
+                c.PrimaryGroupId == dto.PrimaryCategoryId &&
+                c.SubCategoryId == dto.SubCategoryId)
+            ?? throw new CategoryException(
+                $"No category found with PrimaryGroupId {dto.PrimaryCategoryId} and SubCategoryId {dto.SubCategoryId}");
 
+        entity.ItemName = dto.ItemName;
+        entity.CategoryId = category.Id;
 
-        entity!.ItemName = dto.ItemName;
-        entity.CategoryId = category!.Id;
-        entity.Category.PrimaryGroup = category!.PrimaryGroup;
-        entity.Category.SubCategory = category.SubCategory;
         await _context.SaveChangesAsync();
-
     }
+
 }
