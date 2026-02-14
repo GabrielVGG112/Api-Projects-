@@ -1,10 +1,12 @@
-﻿using AutoMapper;
+﻿
+using AutoMapper;
 using FoodingApp.Api.CustomExceptions;
 using FoodingApp.Api.Dtos;
 using FoodingApp.Api.Services.Interfaces;
 using FoodingApp.Library;
 using FoodingApp.Library.Dtos;
 using FoodingApp.Library.Models;
+using FoodingApp.Library.Nutrition;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodingApp.EfCore.Services;
@@ -27,7 +29,7 @@ public class FoodingItemRepository : IFoodingItemRepository
          .SingleOrDefaultAsync(e => e.Id == id)
          ?? throw new FoodItemException("No Food item with this id exists");
 
-        _mapper.Map(dto, entity.Nutrients.Minerals);
+        entity.Nutrients.Minerals = (Minerals)dto;
         await _context.SaveChangesAsync();
 
     }
@@ -37,12 +39,11 @@ public class FoodingItemRepository : IFoodingItemRepository
         FoodItemModel? entity = await _context.FoodItems
           .SingleOrDefaultAsync(e => e.Id == id)
           ?? throw new FoodItemException("No Food item with this id exists");
-        if (entity is not null)
-        {
-            _mapper.Map(dto, entity.Nutrients.Vitamins);
 
-            await _context.SaveChangesAsync();
-        }
+        entity.Nutrients.Vitamins = (Vitamins)dto;
+
+        await _context.SaveChangesAsync();
+
     }
 
     public async Task UpdateMacrosAsync(int id, MacroNutrientsDto dto)
@@ -51,13 +52,13 @@ public class FoodingItemRepository : IFoodingItemRepository
             .SingleOrDefaultAsync(e => e.Id == id)
             ?? throw new FoodItemException("No Food item with this id exists");
 
-        _mapper.Map(dto, entity.Nutrients.Minerals);
+        entity.Nutrients.Macros = (MacroNutrients)dto;
         await _context.SaveChangesAsync();
 
     }
     public async Task<FoodItemModel> AddAsync(FoodItemForManipulationDto model)
     {
-        var item = _mapper.Map<FoodItemModel>(model);
+        var item = (FoodItemModel)model;
         await _context.AddAsync(item);
         await _context.SaveChangesAsync();
         return item;
@@ -65,81 +66,86 @@ public class FoodingItemRepository : IFoodingItemRepository
 
     public async Task<IEnumerable<FoodItemDto>> GetAllAsync(CancellationToken ct)
     {
-        IEnumerable<FoodItemModel> items = await _context.FoodItems
+        IEnumerable<FoodItemDto> dtos = await _context.FoodItems
              .AsNoTrackingWithIdentityResolution()
              .AsSplitQuery()
              .Include(fi => fi.Category.PrimaryGroup)
              .Include(fi => fi.Category.SubCategory)
+             .Select(f => (FoodItemDto)f)
              .ToListAsync(ct);
 
-        IEnumerable<FoodItemDto> dto = _mapper.Map<IEnumerable<FoodItemDto>>(items);
-
-        return dto;
+        return dtos;
     }
 
 
     public async Task<FoodItemDto> GetByIdAsync(int id)
     {
-        FoodItemModel? entity = await _context.FoodItems
+        FoodItemDto? dto = await _context.FoodItems
              .AsNoTracking()
              .AsSplitQuery()
              .Include(fi => fi.Category.PrimaryGroup)
              .Include(fi => fi.Category.SubCategory)
              .Where(fi => fi.Id == id)
-             .FirstOrDefaultAsync();
+             .Select(f => (FoodItemDto)f)
+             .FirstOrDefaultAsync()
+             ?? throw new FoodItemException("Nu such food item with this id found");
 
-        FoodItemDto dto = _mapper.Map<FoodItemDto>(entity);
+
 
         return dto;
     }
 
     public async Task<MacroNutrientsDto> GetMacrosAsync(int foodItemId)
     {
-        FoodItemModel entity = await _context.FoodItems.AsNoTracking()
+        MacroNutrientsDto dto = await _context.FoodItems.AsNoTracking()
               .AsSplitQuery()
               .Include(fi => fi.Nutrients.Macros)
               .Where(fi => fi.Id == foodItemId)
+              .Select(fi => (MacroNutrientsDto)fi)
               .FirstOrDefaultAsync()
               ?? throw new FoodItemException($"No food item found with this ID ");
 
-        return _mapper.Map<MacroNutrientsDto>(entity.Nutrients.Macros);
+        return dto;
 
     }
 
     public async Task<MineralsDto> GetMineralsAsync(int foodItemId)
     {
-        FoodItemModel entity = await _context.FoodItems.AsNoTracking()
-              .AsSplitQuery()
-              .Include(fi => fi.Nutrients.Minerals)
-              .Where(fi => fi.Id == foodItemId)
-              .FirstOrDefaultAsync()
-              ?? throw new FoodItemException($"No food item found with this ID ");
-        return _mapper.Map<MineralsDto>(entity.Nutrients.Minerals);
+        MineralsDto dto = await _context.FoodItems.AsNoTracking()
+             .AsSplitQuery()
+             .Include(fi => fi.Nutrients.Minerals)
+             .Where(fi => fi.Id == foodItemId)
+             .Select(fi => (MineralsDto)fi)
+             .FirstOrDefaultAsync()
+             ?? throw new FoodItemException($"No food item found with this ID ");
+        return dto;
     }
 
     public async Task<IEnumerable<FoodItemDto>> GetPagedAsync(int page, int pageSize)
     {
-        IEnumerable<FoodItemModel> foodItemDtos = await _context.FoodItems
+        IEnumerable<FoodItemDto> foodItemDtos = await _context.FoodItems
              .AsNoTracking()
              .Include(fi => fi.Category.PrimaryGroup)
              .Include(fi => fi.Category.SubCategory)
+             .Select(fi => (FoodItemDto)fi)
              .Skip((page - 1) * pageSize)
              .Take(pageSize)
              .ToListAsync();
 
-        return _mapper.Map<IEnumerable<FoodItemDto>>(foodItemDtos);
+        return foodItemDtos;
     }
 
     public async Task<VitaminsDto> GetVitaminsAsync(int foodItemId)
     {
-        FoodItemModel entity = await _context.FoodItems
+        VitaminsDto dto = await _context.FoodItems
                 .AsNoTracking()
                 .AsSplitQuery()
                 .Include(fi => fi.Nutrients.Vitamins)
                 .Where(fi => fi.Id == foodItemId)
+                .Select(fi => (VitaminsDto)fi)
                 .FirstOrDefaultAsync()
                 ?? throw new FoodItemException($"No food item found with this ID ");
-        return _mapper.Map<VitaminsDto>(entity.Nutrients.Vitamins);
+        return dto;
     }
 
     public async Task SoftDeleteAsync(int id)
@@ -164,7 +170,8 @@ public class FoodingItemRepository : IFoodingItemRepository
 
     public async Task UpdateAsync(int id, FoodItemForManipulationDto dto)
     {
-        FoodItemModel? entity = await _context.FoodItems
+        FoodItemModel? entity =
+            await _context.FoodItems
         .AsSplitQuery()
         .Include(f => f.Nutrients.Macros)
         .Include(f => f.Nutrients.Vitamins)
@@ -175,7 +182,7 @@ public class FoodingItemRepository : IFoodingItemRepository
         if (entity is null)
             throw new FoodItemException($"Food item with ID {id} not found");
 
-        _mapper.Map(dto, entity);
+        entity = (FoodItemModel)dto;
 
         await _context.SaveChangesAsync();
 
@@ -183,7 +190,8 @@ public class FoodingItemRepository : IFoodingItemRepository
 
     public async Task PatchDocumentAsync(int id, FoodItemDto dto)
     {
-        FoodItemModel? entity = await _context.FoodItems
+        FoodItemModel? entity =
+            await _context.FoodItems
              .Include(f => f.Category)
              .SingleOrDefaultAsync(f => f.Id == id)
              ?? throw new FoodItemException($"Food item with ID {id} not found");

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using FoodingApp.Api.Dtos;
+﻿using FoodingApp.Api.Dtos;
 using FoodingApp.Api.Services.Interfaces;
 using FoodingApp.EfCore;
 using FoodingApp.Library.Dtos;
@@ -10,12 +9,12 @@ namespace FoodingApp.Api.Services;
 public class FoodingAppSearchRepository : ISearchRepository
 {
     private readonly FoodingAppDb _db;
-    private readonly IMapper _mapper;
 
-    public FoodingAppSearchRepository(FoodingAppDb db,IMapper mapper)
+
+    public FoodingAppSearchRepository(FoodingAppDb db)
     {
         _db = db;
-        _mapper = mapper; 
+     
     }
      public async Task<PagedResultDto<FoodItemDto>> GetFoodItemAsync(FoodSearchQueryDto searchQuery,CancellationToken ct) 
     {
@@ -40,25 +39,27 @@ public class FoodingAppSearchRepository : ISearchRepository
         }
         var totalCount = await q.CountAsync(ct);
 
-        var items = await q
+        var items = searchQuery.Desc ?
+            await q
+            .OrderByDescending(c => c.ItemName)
+            .Select(fi=> (FoodItemDto)fi)
             .Skip((searchQuery.Page - 1) * searchQuery.PageSize)
-             .Take(searchQuery.PageSize).ToArrayAsync(ct);
+            .Take(searchQuery.PageSize)
+        
+            .ToArrayAsync(ct)
+            :  // <-----
+             await q
+             .OrderBy(c => c.ItemName)
+             .Select(fi => (FoodItemDto)fi)
+             .Skip((searchQuery.Page - 1) * searchQuery.PageSize)
+             .Take(searchQuery.PageSize)
+             .ToArrayAsync(ct);
         return new PagedResultDto<FoodItemDto>
         {
-            Count = totalCount, 
+            Count = totalCount,
             Page = searchQuery.Page,
-            items = _mapper.Map<IEnumerable<FoodItemDto>>(items),
+            items = items,
             PageSize = searchQuery.PageSize,
         };
     }
     }
-//public class FoodSearchQueryDto
-//{
-//    public string? Name { get; set; }
-//    public string? Category { get; set; }
-// public string? SubCategory { get; set; }
-//    public int Page { get; set; } = 1;
-//    public int PageSize { get; set; } = 20;
-//    public string? SortBy { get; set; } = "name";
-//    public bool Desc { get; set; } = false;
-//}

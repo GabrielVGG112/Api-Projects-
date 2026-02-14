@@ -1,4 +1,6 @@
-﻿namespace FoodingApp.Library.Nutrition;
+﻿using FoodingApp.Api.Dtos;
+
+namespace FoodingApp.Library.Nutrition;
 
 public class Vitamins
 {
@@ -16,8 +18,27 @@ public class Vitamins
     public double VitaminD { get; set; }
     public double VitaminE { get; set; }
     public double VitaminK { get; set; }
+    public Vitamins()
+    {
 
+    }
 
-
-
+    public Vitamins(VitaminsDto dto)
+    {
+        VitaminA= dto.VitaminA;
+        VitaminB1 = dto.VitaminB1;
+        VitaminB2 = dto.VitaminB2;
+        VitaminB3 = dto.VitaminB3;
+        VitaminB5 = dto.VitaminB5;
+        VitaminB6 = dto.VitaminB6;
+        VitaminB7 = dto.VitaminB7;
+        VitaminB9 = dto.VitaminB9;
+        VitaminB12 = dto.VitaminB12;
+        VitaminC = dto.VitaminC;
+        VitaminD = dto.VitaminD;
+        VitaminE = dto.VitaminE;
+        VitaminK = dto.VitaminK;
+        
+    }
+    public static explicit operator Vitamins(VitaminsDto dto) => new Vitamins(dto); 
 }

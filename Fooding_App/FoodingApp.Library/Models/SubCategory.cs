@@ -1,4 +1,6 @@
-﻿namespace FoodingApp.Library.Models;
+﻿using System.Security.Cryptography.X509Certificates;
+
+namespace FoodingApp.Library.Models;
 
 
 
@@ -11,8 +13,9 @@ public class SubCategory
     {
 
     }
-    public SubCategory(string groupName)
+    public SubCategory(int id ,string groupName)
     {
+        Id = id;
         Name = groupName;
     }
     public int Id { get; set; }

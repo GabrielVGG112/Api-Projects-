@@ -30,9 +30,6 @@ builder.Services.AddControllers()
                 )
                 .AddXmlDataContractSerializerFormatters();
 
-builder.Services.AddAutoMapper(cfg => { }, typeof(ItemsAndCategoriesMapper));
-
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddRouting(o => o.LowercaseUrls = true);
 builder.Services.AddEndpointsApiExplorer();

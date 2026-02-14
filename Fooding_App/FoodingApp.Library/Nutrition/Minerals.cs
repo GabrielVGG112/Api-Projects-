@@ -1,4 +1,8 @@
-﻿namespace FoodingApp.Library.Nutrition;
+﻿using FoodingApp.Api.Dtos;
+using System.Drawing;
+using System.Runtime.CompilerServices;
+
+namespace FoodingApp.Library.Nutrition;
 
 public class Minerals
 {
@@ -19,7 +23,29 @@ public class Minerals
     public double Iodine { get; set; }           // I
 
 
+    public Minerals()
+    {
 
-
+    }
+    public Minerals(MineralsDto dto)
+    {
+        Calcium = dto.Calcium;
+        Chloride = dto.Chloride;
+        Magnesium = dto.Magnesium;
+        Phosphorus = dto.Phosphorus;
+        Potassium = dto.Potassium;
+        Sodium = dto.Sodium;
+        Iron = dto.Iron;
+        Zinc = dto.Zinc;
+        Copper = dto.Copper;
+        Manganese = dto.Manganese;
+        Selenium = dto.Selenium;
+        Iodine = dto.Iodine;
+        Zinc = dto.Zinc;
+        Manganese = dto.Manganese;
+        Selenium = dto.Selenium;
+        Iodine= dto.Iodine;
+    }
+    public static explicit operator  Minerals (MineralsDto dto) => new Minerals(dto);
 
 }
