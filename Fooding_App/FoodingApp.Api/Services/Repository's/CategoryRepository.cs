@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using FoodingApp.Api.CustomExceptions;
+﻿using FoodingApp.Api.CustomExceptions;
 using FoodingApp.Api.Dtos;
 using FoodingApp.Api.Services.Interfaces;
 using FoodingApp.EfCore;

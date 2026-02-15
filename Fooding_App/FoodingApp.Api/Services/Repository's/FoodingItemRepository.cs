@@ -1,5 +1,5 @@
 ﻿
-using AutoMapper;
+
 using FoodingApp.Api.CustomExceptions;
 using FoodingApp.Api.Dtos;
 using FoodingApp.Api.Services.Interfaces;
@@ -14,12 +14,12 @@ namespace FoodingApp.EfCore.Services;
 public class FoodingItemRepository : IFoodingItemRepository
 {
     private readonly FoodingAppDb _context;
-    private readonly IMapper _mapper;
 
-    public FoodingItemRepository(FoodingAppDb context, IMapper mapper)
+
+    public FoodingItemRepository(FoodingAppDb context)
     {
         _context = context;
-        _mapper = mapper;
+  
     }
 
     public async Task UpdateMineralsAsync(int id, MineralsDto dto)

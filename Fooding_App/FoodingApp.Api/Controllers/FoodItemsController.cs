@@ -57,7 +57,7 @@ public class FoodItemsController : ControllerBase
     {
 
 
-        return Ok(_repo.GetPagedAsync(page, pageSize));
+        return Ok(await _repo.GetPagedAsync(page, pageSize));
     }
 
 

@@ -68,7 +68,7 @@ namespace FoodingApp.Api.Controllers
         }
 
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
 
@@ -90,7 +90,7 @@ namespace FoodingApp.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PostCategory(int id, FoodCategoryForManipulationDto category)
+        public async Task<IActionResult> PutCategory(int id, FoodCategoryForManipulationDto category)
         {
 
             await _repo.UpdateAsync(id, category);
