@@ -183,7 +183,12 @@ public class FoodingItemRepository : IFoodingItemRepository
             throw new FoodItemException($"Food item with ID {id} not found");
         var updated = (FoodItemModel)dto;
         _context.Entry(entity).CurrentValues.SetValues(updated);
-        await _context.SaveChangesAsync();
+        _context.Entry(entity.Nutrients).CurrentValues.SetValues(updated.Nutrients);
+        _context.Entry(entity.Nutrients.Vitamins).CurrentValues.SetValues(updated.Nutrients.Vitamins);
+        _context.Entry(entity.Nutrients.Macros).CurrentValues.SetValues(updated.Nutrients.Macros);
+        _context.Entry(entity.Nutrients.Minerals).CurrentValues.SetValues(updated.Nutrients.Minerals);
+
+
 
 
         await _context.SaveChangesAsync();
