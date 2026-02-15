@@ -176,11 +176,10 @@ public class FoodingItemRepository : IFoodingItemRepository
         .Include(f => f.Nutrients.Macros)
         .Include(f => f.Nutrients.Vitamins)
         .Include(f => f.Nutrients.Minerals)
-        .SingleOrDefaultAsync(f => f.Id == id);
-
-
-        if (entity is null)
-            throw new FoodItemException($"Food item with ID {id} not found");
+        .SingleOrDefaultAsync(f => f.Id == id)  ??
+        throw new FoodItemException($"Food item with ID {id} not found");
+       
+        
         var updated = (FoodItemModel)dto;
         _context.Entry(entity).CurrentValues.SetValues(updated);
         _context.Entry(entity.Nutrients).CurrentValues.SetValues(updated.Nutrients);
