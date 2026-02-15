@@ -94,7 +94,21 @@ public class FoodingItemRepository : IFoodingItemRepository
 
         return dto;
     }
+    public async Task<FoodItemForPatchDto>GetPatchDtoAsync(int id) 
+    
+    {
+        FoodItemForPatchDto? dto = await _context.FoodItems
+          .AsNoTracking()
+          .AsSplitQuery()
+          .Include(fi => fi.Category.PrimaryGroup)
+          .Include(fi => fi.Category.SubCategory)
+          .Where(fi => fi.Id == id)
+          .Select(f => (FoodItemForPatchDto)f)
+          .FirstOrDefaultAsync()
+          ?? throw new FoodItemException("Nu such food item with this id found");
+        return dto;
 
+    }
     public async Task<MacroNutrientsDto> GetMacrosAsync(int foodItemId)
     {
         MacroNutrientsDto dto = await _context.FoodItems.AsNoTracking()

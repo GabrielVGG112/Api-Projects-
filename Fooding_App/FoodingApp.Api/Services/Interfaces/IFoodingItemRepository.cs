@@ -14,6 +14,8 @@ namespace FoodingApp.Api.Services.Interfaces
         Task UpdateVitaminsAsync(int id, VitaminsDto dto);
         Task UpdateMacrosAsync(int id, MacroNutrientsDto dto);
         Task PatchDocumentAsync(int id, FoodItemDto dto);
-      
+        Task<FoodItemForPatchDto> GetPatchDtoAsync(int id);
+
+
     }
 }

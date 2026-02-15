@@ -88,7 +88,7 @@ namespace FoodingApp.Api.Controllers
         }
 
 
-        public async Task<IActionResult> ApplyPatchAsync<TDto>(int id,
+        private async Task<IActionResult> ApplyPatchAsync<TDto>(int id,
             JsonPatchDocument<TDto> patch,
             Func<int, Task<TDto>> getter, Func<int, TDto, Task> updater)
             where TDto : class, new()

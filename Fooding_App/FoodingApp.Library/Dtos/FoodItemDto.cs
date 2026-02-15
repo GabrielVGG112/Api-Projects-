@@ -1,4 +1,5 @@
-﻿using FoodingApp.Library.Models;
+﻿using FoodingApp.Library.Dtos;
+using FoodingApp.Library.Models;
 
 namespace FoodingApp.Api.Dtos
 {
@@ -24,4 +25,24 @@ namespace FoodingApp.Api.Dtos
 
         public static explicit operator FoodItemDto(FoodItemModel entity) => new FoodItemDto(entity);
     }
+}
+public class FoodItemForPatchDto 
+{
+    public int CategoryId { get; set; }
+    public string ItemName { get; set; } = string.Empty;
+    public NutrientsDto Nutrients { get; set; }
+
+
+    public FoodItemForPatchDto()
+    {
+
+    }
+    public FoodItemForPatchDto(FoodItemModel model)
+    {
+        CategoryId = model.CategoryId;
+        ItemName = model.ItemName;
+        Nutrients = (NutrientsDto)model.Nutrients;
+    }
+
+    public static explicit operator FoodItemForPatchDto(FoodItemModel model) => new FoodItemForPatchDto(model);
 }

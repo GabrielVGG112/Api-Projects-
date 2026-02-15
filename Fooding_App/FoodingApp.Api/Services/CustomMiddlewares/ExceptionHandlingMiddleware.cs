@@ -1,7 +1,6 @@
 ﻿using FoodingApp.Api.CustomExceptions;
 using FoodingApp.Api.Services.CustomMiddlewares;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace FoodingApp.Api.Services.CustomMiddlewares
 {

@@ -23,5 +23,12 @@ public class FoodItemModel
         ItemName = dto.ItemName;
         Nutrients = (Nutrients)dto.Nutrients;
     }
+    public FoodItemModel(FoodItemForPatchDto dto)
+    {
+        CategoryId = dto.CategoryId;
+        ItemName = dto.ItemName;
+        Nutrients = (Nutrients)dto.Nutrients;
+    }
     public static explicit operator  FoodItemModel (FoodItemForManipulationDto dto) => new FoodItemModel(dto);
+    public static explicit operator FoodItemModel(FoodItemForPatchDto dto) =>new  FoodItemModel(dto);
 }
