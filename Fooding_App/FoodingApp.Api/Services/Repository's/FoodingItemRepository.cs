@@ -181,8 +181,10 @@ public class FoodingItemRepository : IFoodingItemRepository
 
         if (entity is null)
             throw new FoodItemException($"Food item with ID {id} not found");
+        var updated = (FoodItemModel)dto;
+        _context.Entry(entity).CurrentValues.SetValues(updated);
+        await _context.SaveChangesAsync();
 
-        entity = (FoodItemModel)dto;
 
         await _context.SaveChangesAsync();
 
