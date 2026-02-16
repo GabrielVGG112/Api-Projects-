@@ -53,7 +53,7 @@ namespace FoodingApp.Api.Services.CustomMiddlewares
                 var errorResponse = new { Message = "The request was canceled by the client." };
                 await context.Response.WriteAsJsonAsync(errorResponse);
             }
-            catch (DbUpdateException ex) when (ex.InnerException.Message.Contains("UNIQUE", StringComparison.OrdinalIgnoreCase) ||
+            catch (DbUpdateException ex) when (ex.InnerException!.Message.Contains("UNIQUE", StringComparison.OrdinalIgnoreCase) ||
             ex.InnerException.Message.Contains("duplicate", StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogError(ex, "A database update exception occurred.");
@@ -73,7 +73,7 @@ namespace FoodingApp.Api.Services.CustomMiddlewares
            
 
             }
-            catch (DbUpdateException ex) 
+            catch (DbUpdateException) 
             { 
                 // Other SQL errors
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;

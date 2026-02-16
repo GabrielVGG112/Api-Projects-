@@ -21,7 +21,7 @@ namespace FoodingApp.Api.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<FoodCategoryDto>>> GetAllAsync(CancellationToken ct,string? name)
+        public async Task<ActionResult<IEnumerable<FoodCategoryDto>>> GetAllAsync(CancellationToken ct, [FromQuery] string? name)
         {
             var categories = await _repo.GetAllAsync(ct,name);
             return Ok(categories);
