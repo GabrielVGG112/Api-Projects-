@@ -7,8 +7,7 @@ using NuGet.Protocol.Core.Types;
 
 namespace FoodingApp.Api.Controllers
 {
-    // TO DO : Fluent Validation
-    // Logging
+    
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
@@ -22,9 +21,9 @@ namespace FoodingApp.Api.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<FoodCategoryDto>>> GetAllAsync(CancellationToken ct)
+        public async Task<ActionResult<IEnumerable<FoodCategoryDto>>> GetAllAsync(CancellationToken ct,string? name)
         {
-            var categories = await _repo.GetAllAsync(ct);
+            var categories = await _repo.GetAllAsync(ct,name);
             return Ok(categories);
         }
         [HttpGet("primary")]

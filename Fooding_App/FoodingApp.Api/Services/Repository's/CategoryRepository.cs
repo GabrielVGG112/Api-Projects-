@@ -50,7 +50,7 @@ public class CategoryRepository : ICategoryRepository
             ?? throw new CategoryException("No primary category with this id exists");
         return categories;
     }
-    public async Task<IEnumerable<FoodCategoryDto>> GetAllAsync(CancellationToken ct)
+    private async Task<IEnumerable<FoodCategoryDto>> GetAllAsync(CancellationToken ct)
     {
         IEnumerable<FoodCategoryDto> dtos = await _context.Categories
               .AsNoTracking()
@@ -62,7 +62,25 @@ public class CategoryRepository : ICategoryRepository
         return dtos;
 
     }
+    public async Task<IEnumerable<FoodCategoryDto>> GetAllAsync(CancellationToken ct,string? name)
+    { 
+        string? value = name?.Trim().ToLower();
 
+        if (name is null) return await GetAllAsync(ct);
+        IEnumerable<FoodCategoryDto> dtos = await _context.Categories
+              .AsNoTracking()
+              .AsSplitQuery()
+              .Include(c => c.PrimaryGroup)
+              .Include(c => c.SubCategory)
+              .Where(c =>
+              EF.Functions.Like(c.PrimaryGroup.Name, $"%{value}%") ||
+              EF.Functions.Like(c.SubCategory.Name,$"%{value}%")
+              )
+              .Select(c => (FoodCategoryDto)c)
+              .ToArrayAsync(ct);
+        return dtos;
+
+    }
     public async Task<FoodCategoryDto> GetByIdAsync(int id)
     {
         var item = await _context.Categories

@@ -6,9 +6,6 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodingApp.Api.Controllers;
-//
-// TO DO : Fluent Validation
-
 
 [Route("api/[controller]")]
 [ApiController]
@@ -27,10 +24,10 @@ public class FoodItemsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<FoodItemDto>>> GetAll(CancellationToken ct)
+    public async Task<ActionResult<IEnumerable<FoodItemDto>>> GetAll(CancellationToken ct,[FromQuery]string? name)
     {
 
-        return Ok(await _repo.GetAllAsync(ct));
+        return Ok(await _repo.GetAllAsync(ct,name));
 
     }
 

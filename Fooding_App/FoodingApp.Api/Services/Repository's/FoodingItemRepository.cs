@@ -3,7 +3,6 @@
 using FoodingApp.Api.CustomExceptions;
 using FoodingApp.Api.Dtos;
 using FoodingApp.Api.Services.Interfaces;
-using FoodingApp.Library;
 using FoodingApp.Library.Dtos;
 using FoodingApp.Library.Models;
 using FoodingApp.Library.Nutrition;
@@ -19,7 +18,7 @@ public class FoodingItemRepository : IFoodingItemRepository
     public FoodingItemRepository(FoodingAppDb context)
     {
         _context = context;
-  
+
     }
 
     public async Task UpdateMineralsAsync(int id, MineralsDto dto)
@@ -64,7 +63,7 @@ public class FoodingItemRepository : IFoodingItemRepository
         return item;
     }
 
-    public async Task<IEnumerable<FoodItemDto>> GetAllAsync(CancellationToken ct)
+    private async Task<IEnumerable<FoodItemDto>> GetAllAsync(CancellationToken ct)
     {
         IEnumerable<FoodItemDto> dtos = await _context.FoodItems
              .AsNoTrackingWithIdentityResolution()
@@ -77,7 +76,24 @@ public class FoodingItemRepository : IFoodingItemRepository
         return dtos;
     }
 
+    public async Task<IEnumerable<FoodItemDto>> GetAllAsync(CancellationToken ct, string? name)
+    {
+        if (string.IsNullOrEmpty(name)) return await GetAllAsync(ct);
 
+   
+
+            IEnumerable<FoodItemDto> dtos =
+                await _context.FoodItems
+       .AsNoTracking()
+       .AsSplitQuery()
+       .Include(fi => fi.Category.PrimaryGroup)
+       .Include(fi => fi.Category.SubCategory)
+       .Where(fi =>  EF.Functions.Like(fi.ItemName, $"%{name}%"))
+       .Select(f => (FoodItemDto)f)
+       .ToListAsync(ct);
+            return dtos;
+        
+    }
     public async Task<FoodItemDto> GetByIdAsync(int id)
     {
         FoodItemDto? dto = await _context.FoodItems
@@ -94,8 +110,8 @@ public class FoodingItemRepository : IFoodingItemRepository
 
         return dto;
     }
-    public async Task<FoodItemForPatchDto>GetPatchDtoAsync(int id) 
-    
+    public async Task<FoodItemForPatchDto> GetPatchDtoAsync(int id)
+
     {
         FoodItemForPatchDto? dto = await _context.FoodItems
           .AsNoTracking()
@@ -190,10 +206,10 @@ public class FoodingItemRepository : IFoodingItemRepository
         .Include(f => f.Nutrients.Macros)
         .Include(f => f.Nutrients.Vitamins)
         .Include(f => f.Nutrients.Minerals)
-        .SingleOrDefaultAsync(f => f.Id == id)  ??
+        .SingleOrDefaultAsync(f => f.Id == id) ??
         throw new FoodItemException($"Food item with ID {id} not found");
-       
-        
+
+
         var updated = (FoodItemModel)dto;
         _context.Entry(entity).CurrentValues.SetValues(updated);
         _context.Entry(entity.Nutrients).CurrentValues.SetValues(updated.Nutrients);
