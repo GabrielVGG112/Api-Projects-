@@ -139,4 +139,25 @@ public class CategoryRepository : ICategoryRepository
         return dtos;
 
     }
+    public async Task<FoodItemDto> GetSingleFoodItemFromCategoryAsync(int categoryId, int foodItemId)
+    {
+        FoodItemDto? dto = await _context.FoodItems
+     .AsNoTracking()
+     .Include(f => f.Category)
+     .Where(f => f.CategoryId == categoryId && f.Id == foodItemId)
+     .Select(f => (FoodItemDto)f)
+     .SingleOrDefaultAsync();
+
+
+        if (dto is null)
+        {
+            bool categoryExists = await _context.Categories.AsNoTracking().AnyAsync(c => c.Id == categoryId);
+            if (!categoryExists) throw new CategoryException("No such category with this id was founded");
+
+            throw new FoodItemException("No such Food Item with this id was found");
+
+
+        }
+        return dto;
+    }
 }

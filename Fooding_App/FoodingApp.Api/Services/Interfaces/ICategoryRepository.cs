@@ -12,5 +12,6 @@ namespace FoodingApp.Api.Services.Interfaces
         Task<IEnumerable<FoodCategoryDto>> GetAllSubcategoriesFromOnePrimaryAsync(int id, CancellationToken ct);
         Task<IEnumerable<PrimaryCategory>> GeAllPrimaryCategoriesAsync(CancellationToken ct);
         Task<IEnumerable<FoodItemDto>> GetFoodItemsFromCategoryIdAsync(int categoryId);
+        Task<FoodItemDto> GetSingleFoodItemFromCategoryAsync(int categoryId, int foodItemId);
     }
 }

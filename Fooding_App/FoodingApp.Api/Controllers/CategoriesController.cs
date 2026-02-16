@@ -77,8 +77,12 @@ namespace FoodingApp.Api.Controllers
 
 
         }
-
-
+        [HttpGet("{categoryId}/fooditems/{foodItemId}")]
+        public async Task<ActionResult<FoodItemDto>> GetSingleFoodItemFromCategoryId(int categoryId , int foodItemId) 
+        {
+            FoodItemDto dto =await _repo.GetSingleFoodItemFromCategoryAsync(categoryId , foodItemId);
+            return Ok(dto);
+        }
         [HttpPost]
         public async Task<IActionResult> PostCategory(FoodCategoryForManipulationDto category)
         {
