@@ -1,6 +1,7 @@
 ﻿using FoodingApp.Api.CustomExceptions;
 using FoodingApp.Api.Services.CustomMiddlewares;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace FoodingApp.Api.Services.CustomMiddlewares
 {
@@ -37,6 +38,13 @@ namespace FoodingApp.Api.Services.CustomMiddlewares
                 var errorResponse = new { Message = ex.Message };
                 await context.Response.WriteAsJsonAsync(errorResponse);
             }
+            catch (ValidationException e) 
+            {
+                _logger.LogError(e,"A exception occured");
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                var errorResponse = new { Message = e.Message };
+                await context.Response.WriteAsJsonAsync(errorResponse);
+            }
 
             catch (TaskCanceledException ex)
             {
@@ -55,14 +63,14 @@ namespace FoodingApp.Api.Services.CustomMiddlewares
 
                 context.Response.StatusCode = StatusCodes.Status409Conflict;
                 await context.Response.WriteAsJsonAsync(new { Message = "Duplicate entry detected." });
-                return;
+           
             }
             catch (DbUpdateException ex) when (ex.Message.Contains("FOREIGN KEY", StringComparison.OrdinalIgnoreCase))
             {
 
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 await context.Response.WriteAsJsonAsync(new { Message = "Invalid foreign key reference." });
-                return;
+           
 
             }
             catch (DbUpdateException ex) 
